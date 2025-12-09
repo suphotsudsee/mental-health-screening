@@ -117,6 +117,9 @@ export default function AssessmentWizard() {
     setRiskResult(result);
     setStep("result");
 
+    const enableLineNotify =
+      process.env.NEXT_PUBLIC_ENABLE_LINE_NOTIFY === "true";
+
     try {
       setSaving(true);
       await fetch("/api/screenings", {
@@ -125,7 +128,7 @@ export default function AssessmentWizard() {
         body: JSON.stringify(result)
       });
 
-      if (level === "medium" || level === "high") {
+      if (enableLineNotify && (level === "medium" || level === "high")) {
         const lineMessage = [
           "แจ้งเตือนผลคัดกรอง 8Q",
           `ระดับความเสี่ยง: ${level.toUpperCase()}`,
