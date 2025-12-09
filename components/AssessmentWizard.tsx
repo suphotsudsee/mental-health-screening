@@ -51,6 +51,27 @@ const MEDIUM_ACTION = "ให้พบแพทย์ / นักจิตวิ
 const HIGH_ACTION =
   "ต้องประเมินโดยแพทย์ทันที ดูแลใกล้ชิด และพิจารณาส่งต่อฉุกเฉิน";
 
+let sarabunFontB64: string | null = null;
+
+const arrayBufferToBase64 = (buffer: ArrayBuffer) => {
+  let binary = "";
+  const bytes = new Uint8Array(buffer);
+  const chunk = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunk) {
+    binary += String.fromCharCode(...bytes.subarray(i, i + chunk));
+  }
+  return btoa(binary);
+};
+
+const ensureSarabunFont = async () => {
+  if (sarabunFontB64) return sarabunFontB64;
+  const res = await fetch("/fonts/Sarabun-Regular.ttf");
+  if (!res.ok) throw new Error("โหลดฟอนต์ Sarabun ไม่ได้");
+  const buffer = await res.arrayBuffer();
+  sarabunFontB64 = arrayBufferToBase64(buffer);
+  return sarabunFontB64;
+};
+
 export default function AssessmentWizard() {
   const [step, setStep] = useState<Step>("stress");
   const [citizenId, setCitizenId] = useState("");
@@ -158,9 +179,19 @@ export default function AssessmentWizard() {
     }
   };
 
-  const exportPDF = () => {
+  const exportPDF = async () => {
     if (!riskResult) return;
     const doc = new jsPDF();
+
+    try {
+      const font = await ensureSarabunFont();
+      doc.addFileToVFS("Sarabun-Regular.ttf", font);
+      doc.addFont("Sarabun-Regular.ttf", "Sarabun", "normal");
+      doc.setFont("Sarabun");
+    } catch (err) {
+      console.error("โหลดฟอนต์สำหรับ PDF ไม่สำเร็จ", err);
+    }
+
     doc.setFontSize(16);
     doc.text("แบบประเมินสุขภาพจิต (Stress / 2Q plus / 8Q)", 10, 20);
 
