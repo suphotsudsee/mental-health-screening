@@ -91,18 +91,25 @@ export default function AssessmentWizard() {
         body: JSON.stringify(result)
       });
 
-      if (level === "medium" || level === "high") {
-        await fetch("/api/line-notify", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            text:
-              `แจ้งเตือนความเสี่ยงฆ่าตัวตายระดับ ${level.toUpperCase()}\n` +
-              `ชื่อ: ${fullname || "-"}\n` +
-              `คะแนน 8Q: ${q8Total}`
-          })
-        });
-      }
+if (level === "medium" || level === "high") {
+  const res = await fetch("/api/line-notify", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      text:
+        `แจ้งเตือนความเสี่ยงฆ่าตัวตายระดับ ${level.toUpperCase()}\n` +
+        `ชื่อ: ${fullname || "-"}\n` +
+        `คะแนน 8Q: ${q8Total}`
+    })
+  });
+
+  const data = await res.json();
+  if (!res.ok) {
+    console.error("LINE error:", data);
+    alert("ส่งแจ้งเตือนไป LINE ไม่สำเร็จ\n" + (data.error || ""));
+  }
+}
+
     } catch (e) {
       console.error(e);
     } finally {

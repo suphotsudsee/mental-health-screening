@@ -1,32 +1,55 @@
 import { NextResponse } from "next/server";
 
-const LINE_TOKEN = process.env.LINE_CHANNEL_ACCESS_TOKEN;
+const LINE_NOTIFY_URL = "https://notify-api.line.me/api/notify";
 
 export async function POST(req) {
-  if (!LINE_TOKEN) {
+  const token = process.env.LINE_CHANNEL_ACCESS_TOKEN;
+
+  if (!token) {
     return NextResponse.json(
       { error: "LINE_CHANNEL_ACCESS_TOKEN is not set" },
       { status: 500 }
     );
   }
 
-  const body = await req.json(); // { text, toUserId? }
+  try {
+    const { text } = await req.json();
 
-  // ตัวอย่าง: ส่งแบบ Broadcast ไปยังกลุ่ม/ผู้รับที่กำหนดเอง
-  // ที่ง่ายที่สุดคือใช้ LINE Notify (message 1 ช่อง)
-  const res = await fetch("https://notify-api.line.me/api/notify", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      Authorization: `Bearer ${LINE_TOKEN}`
-    },
-    body: new URLSearchParams({ message: body.text || "-" }).toString()
-  });
+    if (!text || text.trim() === "") {
+      return NextResponse.json(
+        { error: "message text is required" },
+        { status: 400 }
+      );
+    }
 
-  if (!res.ok) {
-    const txt = await res.text();
-    return NextResponse.json({ error: txt }, { status: 400 });
+    // LINE Notify ต้องการ x-www-form-urlencoded
+    const body = new URLSearchParams({ message: text }).toString();
+
+    const res = await fetch(LINE_NOTIFY_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Authorization: `Bearer ${token}`
+      },
+      body
+    });
+
+    const responseText = await res.text();
+
+    if (!res.ok) {
+      // ส่ง error กลับให้ frontend ดูได้
+      return NextResponse.json(
+        { error: "LINE API error", status: res.status, detail: responseText },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({ ok: true, detail: responseText });
+  } catch (err) {
+    console.error("LINE Notify error:", err);
+    return NextResponse.json(
+      { error: err.message || "Unexpected error" },
+      { status: 500 }
+    );
   }
-
-  return NextResponse.json({ ok: true });
 }
