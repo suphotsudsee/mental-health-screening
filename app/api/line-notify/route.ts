@@ -1,8 +1,8 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 const LINE_NOTIFY_URL = "https://notify-api.line.me/api/notify";
 
-export async function POST(req) {
+export async function POST(req: NextRequest) {
   const token = process.env.LINE_CHANNEL_ACCESS_TOKEN;
 
   if (!token) {
@@ -22,7 +22,7 @@ export async function POST(req) {
       );
     }
 
-    // LINE Notify ต้องการ x-www-form-urlencoded
+    // LINE Notify expects an x-www-form-urlencoded payload
     const body = new URLSearchParams({ message: text }).toString();
 
     const res = await fetch(LINE_NOTIFY_URL, {
@@ -37,7 +37,7 @@ export async function POST(req) {
     const responseText = await res.text();
 
     if (!res.ok) {
-      // ส่ง error กลับให้ frontend ดูได้
+      // Return detailed info so the frontend can surface the LINE API error
       return NextResponse.json(
         { error: "LINE API error", status: res.status, detail: responseText },
         { status: 500 }
@@ -45,11 +45,9 @@ export async function POST(req) {
     }
 
     return NextResponse.json({ ok: true, detail: responseText });
-  } catch (err) {
+  } catch (err: unknown) {
     console.error("LINE Notify error:", err);
-    return NextResponse.json(
-      { error: err.message || "Unexpected error" },
-      { status: 500 }
-    );
+    const message = err instanceof Error ? err.message : "Unexpected error";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
