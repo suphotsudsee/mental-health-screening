@@ -1,10 +1,10 @@
 module.exports = {
   apps: [
     {
-      name: 'paymonth-nextjs',
+      name: 'xxxxx-nextjs',
       script: 'npm',
       args: 'start',
-      cwd: '/home/phoubon-test-paymonth/htdocs/test-paymonth.phoubon.in.th',
+      cwd: '/home/phoubon-xxx/htdocs/xxxx.phoubon.in.th',
       instances: 1,
       autorestart: true,
       watch: false,
@@ -33,8 +33,8 @@ module.exports = {
       user: 'phoubon-suphot',
       host: 'localhost',
       ref: 'origin/main',
-      repo: 'https://github.com/suphotsudsee/paymonth-nextjs.git',
-      path: '/home/phoubon-test-paymonth/htdocs/test-paymonth.phoubon.in.th',
+      repo: 'https://github.com/suphotsudsee/xxx-nextjs.git',
+      path: '/home/phoubon-xxx/htdocs/xxx.phoubon.in.th',
       'pre-deploy-local': '',
       'post-deploy': 'npm install && npm run build && pm2 reload ecosystem.config.js --env production',
       'pre-setup': '',
