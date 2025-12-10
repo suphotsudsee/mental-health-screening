@@ -1,8 +1,8 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import pool from "@/lib/db";
 
 // POST /api/screenings  บันทึกผลคัดกรอง
-export async function POST(req) {
+export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
 
@@ -40,20 +40,19 @@ export async function POST(req) {
     );
 
     return NextResponse.json({
+      // @ts-expect-error mysql2 typings don't narrow tuple index
       id: result.insertId,
       ...body
     });
-  } catch (err) {
+  } catch (err: unknown) {
     console.error("POST /screenings error:", err);
-    return NextResponse.json(
-      { error: err.message || "db error" },
-      { status: 500 }
-    );
+    const message = err instanceof Error ? err.message : "db error";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 
-// GET /api/screenings?limit=200  ดึงข้อมูลย้อนหลัง
-export async function GET(req) {
+// GET /api/screenings?limit=200  ดึงข้อมูลคัดกรอง
+export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const limit = Number(searchParams.get("limit") || "100");
@@ -67,11 +66,9 @@ export async function GET(req) {
     );
 
     return NextResponse.json(rows);
-  } catch (err) {
+  } catch (err: unknown) {
     console.error("GET /screenings error:", err);
-    return NextResponse.json(
-      { error: err.message || "db error" },
-      { status: 500 }
-    );
+    const message = err instanceof Error ? err.message : "db error";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
