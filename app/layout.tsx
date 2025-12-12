@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import PwaRegister from "@/components/PwaRegister";
 import "./globals.css";
 
 export const metadata = {
@@ -23,9 +24,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <link rel="manifest" href="/manifest.json" />
       </head>
       <body className="min-h-dvh w-full bg-slate-100">
-        <main className="w-full min-h-dvh bg-white md:max-w-md md:mx-auto md:shadow-lg md:border md:border-slate-200">
+        <main className="w-full bg-white md:max-w-md md:mx-auto md:shadow-lg md:border md:border-slate-200">
           {children}
         </main>
+        <PwaRegister />
       </body>
     </html>
   );
