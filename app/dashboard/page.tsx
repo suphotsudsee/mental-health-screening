@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export default function DashboardPage() {
@@ -18,7 +19,16 @@ export default function DashboardPage() {
 
   return (
     <div className="p-4 space-y-4">
-      <h1 className="text-xl font-bold text-center">Dashboard ผู้บริหาร</h1>
+      <div className="flex items-center justify-between gap-3">
+        <Link
+          href="/"
+          className="rounded border border-slate-200 bg-white px-3 py-1 text-sm text-slate-700 hover:bg-slate-50"
+        >
+          กลับหน้าแรก
+        </Link>
+        <h1 className="flex-1 text-center text-xl font-bold">Dashboard ผู้บริหาร</h1>
+        <div className="w-[96px]" />
+      </div>
 
       <div className="grid grid-cols-2 gap-3">
         <StatCard label="ไม่พบความเสี่ยง" value={count("none")} color="bg-emerald-100" />

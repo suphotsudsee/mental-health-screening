@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import jsPDF from "jspdf";
 
@@ -224,9 +225,18 @@ export default function AssessmentWizard() {
   if (step === "stress") {
     return (
       <div className="p-4 space-y-4">
-        <h1 className="text-xl font-bold text-center mb-1">
-          แบบประเมินความเครียด
-        </h1>
+        <div className="mb-1 flex items-center justify-between gap-3">
+          <Link
+            href="/"
+            className="rounded border border-slate-200 bg-white px-3 py-1 text-sm text-slate-700 hover:bg-slate-50"
+          >
+            กลับหน้าแรก
+          </Link>
+          <h1 className="flex-1 text-center text-xl font-bold">
+            แบบประเมินความเครียด
+          </h1>
+          <div className="w-[96px]" />
+        </div>
 
         <div className="bg-slate-50 p-3 rounded-md space-y-2 text-sm">
           <div>
@@ -295,7 +305,16 @@ export default function AssessmentWizard() {
 
     return (
       <div className="p-4 space-y-4">
-        <h1 className="text-xl font-bold text-center">แบบประเมิน 2Q plus</h1>
+        <div className="flex items-center justify-between gap-3">
+          <Link
+            href="/"
+            className="rounded border border-slate-200 bg-white px-3 py-1 text-sm text-slate-700 hover:bg-slate-50"
+          >
+            กลับหน้าแรก
+          </Link>
+          <h1 className="flex-1 text-center text-xl font-bold">แบบประเมิน 2Q plus</h1>
+          <div className="w-[96px]" />
+        </div>
 
         {twoqQuestions.map(({ key, text }) => (
           <div key={key} className="space-y-1">
@@ -336,9 +355,18 @@ export default function AssessmentWizard() {
   if (step === "eightq") {
     return (
       <div className="p-4 space-y-4">
-        <h1 className="text-xl font-bold text-center">
-          แบบประเมินความเสี่ยงฆ่าตัวตาย (8Q)
-        </h1>
+        <div className="flex items-center justify-between gap-3">
+          <Link
+            href="/"
+            className="rounded border border-slate-200 bg-white px-3 py-1 text-sm text-slate-700 hover:bg-slate-50"
+          >
+            กลับหน้าแรก
+          </Link>
+          <h1 className="flex-1 text-center text-xl font-bold">
+            แบบประเมินความเสี่ยงฆ่าตัวตาย (8Q)
+          </h1>
+          <div className="w-[96px]" />
+        </div>
 
         <div className="text-sm bg-amber-50 border border-amber-200 text-amber-800 p-3 rounded">
           ตอบ “มี/ไม่มี” สำหรับทุกข้อ (มี = 1 คะแนน) หากตอบ “มี” ในข้อ 7 หรือ 8
@@ -392,7 +420,16 @@ export default function AssessmentWizard() {
   // RESULT
   return (
     <div className="p-4 space-y-4">
-      <h1 className="text-xl font-bold text-center">ผลการประเมิน</h1>
+      <div className="flex items-center justify-between gap-3">
+        <Link
+          href="/"
+          className="rounded border border-slate-200 bg-white px-3 py-1 text-sm text-slate-700 hover:bg-slate-50"
+        >
+          กลับหน้าแรก
+        </Link>
+        <h1 className="flex-1 text-center text-xl font-bold">ผลการประเมิน</h1>
+        <div className="w-[96px]" />
+      </div>
 
       {riskResult && (
         <>

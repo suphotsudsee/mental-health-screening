@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import jsPDF from "jspdf";
 import { useEffect, useState } from "react";
 
@@ -96,7 +97,16 @@ export default function HistoryPage() {
 
   return (
     <div className="p-4">
-      <h1 className="text-xl font-bold mb-3 text-center">ประวัติการคัดกรอง</h1>
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <Link
+          href="/"
+          className="rounded border border-slate-200 bg-white px-3 py-1 text-sm text-slate-700 hover:bg-slate-50"
+        >
+          กลับหน้าแรก
+        </Link>
+        <h1 className="flex-1 text-center text-xl font-bold">ประวัติการคัดกรอง</h1>
+        <div className="w-[96px]" />
+      </div>
 
       {!authorized && (
         <form
