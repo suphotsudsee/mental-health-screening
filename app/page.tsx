@@ -37,7 +37,7 @@ export default function HomePage() {
 
       <footer className="mt-10 text-center text-xs text-gray-400">
         กลุ่มงานสุขภาพจิต / กลุ่มงานสุขภาพดิจิทัล – ใช้เพื่อการสาธารณสุข<br />
-        สำนักงานสาธารรณสุขจังหวัดอุบลราชธานี
+        #สำนักงานสาธารรณสุขจังหวัดอุบลราชธานี
       </footer>
     </div>
   );
