@@ -23,8 +23,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <meta name="mobile-web-app-capable" content="yes" />
         <link rel="manifest" href="/manifest.json" />
       </head>
-      <body className="min-h-dvh w-full bg-slate-100">
-        <main className="w-full bg-white md:max-w-md md:mx-auto md:shadow-lg md:border md:border-slate-200">
+      <body className="min-h-dvh w-full bg-white">
+        <main className="min-h-dvh w-full bg-white">
           {children}
         </main>
         <PwaRegister />
