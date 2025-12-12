@@ -26,11 +26,6 @@ jobs:
           cd /home/phoubon-mhs/htdocs/mhs.phoubon.in.th
           npm install
 
-      - name: Prisma generate
-        run: |
-          cd /home/phoubon-mhs/htdocs/mhs.phoubon.in.th
-          npx prisma generate
-
       - name: Build Next.js
         run: |
           cd /home/phoubon-mhs/htdocs/mhs.phoubon.in.th
@@ -47,4 +42,3 @@ jobs:
             pm2 start "npm start" --name mhs-nextjs
           fi
           pm2 save
-
