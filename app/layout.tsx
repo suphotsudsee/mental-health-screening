@@ -10,11 +10,17 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="th">
       <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, viewport-fit=cover"
+        />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="theme-color" content="#047857" />
         <link rel="manifest" href="/manifest.json" />
       </head>
-      <body className="min-h-screen w-full bg-slate-100">
-        <main className="w-full min-h-screen bg-white md:max-w-md md:mx-auto md:shadow-lg md:border md:border-slate-200">
+      <body className="min-h-dvh w-full bg-slate-100">
+        <main className="w-full min-h-dvh bg-white md:max-w-md md:mx-auto md:shadow-lg md:border md:border-slate-200">
           {children}
         </main>
       </body>
