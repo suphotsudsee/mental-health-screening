@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 9103",
+    "dev": "next dev -p 3000",
     "build": "next build",
-    "start": "next start -p 9103",
+    "start": "next start -p 3000",
     "lint": "eslint",
     "audit:rsc": "npm ls react-server-dom-webpack react-server-dom-parcel react-server-dom-turbopack || true"
   },
