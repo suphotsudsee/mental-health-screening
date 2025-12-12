@@ -140,7 +140,8 @@ export default function AssessmentWizard() {
     setStep("result");
 
     const enableLineNotify =
-      process.env.NEXT_PUBLIC_ENABLE_LINE_NOTIFY === "true";
+      (process.env.NEXT_PUBLIC_ENABLE_LINE_NOTIFY || "true").toLowerCase() ===
+      "true";
 
     try {
       setSaving(true);
@@ -161,7 +162,7 @@ export default function AssessmentWizard() {
           .filter(Boolean)
           .join("\n");
 
-        const res = await fetch("/api/line-notify", {
+        const res = await fetch("/api/line-alert", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ text: lineMessage })
