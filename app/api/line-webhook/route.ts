@@ -1,19 +1,21 @@
-// app/api/line-webhook/route.ts
-import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
+import { NextRequest, NextResponse } from "next/server";
 
 const CHANNEL_SECRET = process.env.LINE_CHANNEL_SECRET || "";
 
-/**
- * ตรวจสอบ X-Line-Signature (ป้องกันคนอื่นยิงมั่ว ๆ)
- * ถ้าช่วงแรกอยากเทสง่าย ๆ จะปิดฟังก์ชันนี้ก็ได้
- */
-function verifySignature(body: string, signature: string | null): boolean {
+// Keep this handler on the Node.js runtime so we can use the built-in crypto module.
+export const runtime = "nodejs";
+
+function verifySignature(body: Buffer, signature: string | null): boolean {
   if (!CHANNEL_SECRET) {
-    console.warn("[LINE] LINE_CHANNEL_SECRET is not set, skip verify");
-    return true; // ถ้าไม่ตั้ง secret จะอนุญาตหมด (สำหรับ dev เท่านั้น)
+    console.warn("[LINE] LINE_CHANNEL_SECRET is not set, skip verification");
+    return true;
   }
-  if (!signature) return false;
+
+  if (!signature) {
+    console.warn("[LINE] Missing X-Line-Signature header");
+    return false;
+  }
 
   const hmac = crypto
     .createHmac("sha256", CHANNEL_SECRET)
@@ -25,14 +27,19 @@ function verifySignature(body: string, signature: string | null): boolean {
 
 export async function POST(req: NextRequest) {
   try {
-    // ต้องอ่านเป็น raw text ก่อน เพื่อตรวจ signature
-    const bodyText = await req.text();
+    // Use the raw request body for signature verification.
+    const bodyBuffer = Buffer.from(await req.arrayBuffer());
+    const bodyText = bodyBuffer.toString("utf-8");
     const signature = req.headers.get("x-line-signature");
 
-    const ok = verifySignature(bodyText, signature);
-    if (!ok) {
-      console.error("[LINE] Invalid signature");
-      return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
+    const isValid = verifySignature(bodyBuffer, signature);
+    if (!isValid) {
+      // Respond 200 so LINE stops retrying, but log the invalid signature.
+      console.warn("[LINE] Invalid signature, ignoring payload");
+      return NextResponse.json(
+        { success: false, error: "Invalid LINE signature" },
+        { status: 200 }
+      );
     }
 
     const body = JSON.parse(bodyText);
@@ -40,28 +47,27 @@ export async function POST(req: NextRequest) {
     console.log("===== LINE Webhook Event =====");
     console.log(JSON.stringify(body, null, 2));
 
-    // ดึง groupId / roomId / userId ออกมาชัด ๆ
     const events = body.events || [];
     for (const ev of events) {
       const source = ev.source || {};
       if (source.groupId) {
-        console.log(">>> groupId ที่ได้จาก event นี้:", source.groupId);
+        console.log("[LINE] groupId:", source.groupId);
       } else if (source.roomId) {
-        console.log(">>> roomId ที่ได้จาก event นี้:", source.roomId);
+        console.log("[LINE] roomId:", source.roomId);
       } else if (source.userId) {
-        console.log(">>> userId (1:1 chat):", source.userId);
+        console.log("[LINE] userId (1:1 chat):", source.userId);
       }
     }
 
-    // LINE ต้องการ HTTP 200 เสมอ เพื่อถือว่ารับ event แล้ว
+    // LINE needs HTTP 200 to treat the webhook as delivered.
     return NextResponse.json({ success: true });
   } catch (err) {
     console.error("[LINE] Webhook error:", err);
-    return NextResponse.json({ error: "Webhook error" }, { status: 500 });
+    // Still respond 200 to avoid a retry storm from LINE; the error is logged for debugging.
+    return NextResponse.json({ error: "Webhook error" }, { status: 200 });
   }
 }
 
-// optional: เอาไว้เช็คว่า endpoint ยังอยู่
 export async function GET() {
   return NextResponse.json({ status: "ok", message: "LINE webhook endpoint" });
 }
