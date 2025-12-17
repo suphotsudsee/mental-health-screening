@@ -200,9 +200,18 @@ export default function AssessmentWizard() {
         });
 
         const data = await res.json();
-        if (!res.ok) {
+        const groupError = data?.groupError || null;
+        const userError = data?.userError || null;
+
+        if (!res.ok || groupError || userError) {
           console.error("LINE error:", data);
-          alert("ส่งแจ้งเตือนไป LINE ไม่สำเร็จ\n" + (data.error || ""));
+          const details = [groupError ? `Group: ${groupError}` : null, userError ? `User: ${userError}` : null]
+            .filter(Boolean)
+            .join("\n");
+          alert(
+            "ส่งแจ้งเตือนไป LINE ไม่สำเร็จ\n" +
+              (details || data.error || "unknown error")
+          );
         }
       }
     } catch (e) {

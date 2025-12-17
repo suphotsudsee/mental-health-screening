@@ -16,14 +16,25 @@ export async function POST(req: NextRequest) {
     }
 
     const results: Record<string, unknown> = {};
+    let hasError = false;
 
-    results.group = await sendLineAlertToGroup(text);
-
-    if (userId && typeof userId === "string") {
-      results.user = await sendLineAlertToUser(text, userId);
+    try {
+      results.group = await sendLineAlertToGroup(text);
+    } catch (err) {
+      hasError = true;
+      results.groupError = err instanceof Error ? err.message : String(err);
     }
 
-    return NextResponse.json(results);
+    if (userId && typeof userId === "string") {
+      try {
+        results.user = await sendLineAlertToUser(text, userId);
+      } catch (err) {
+        hasError = true;
+        results.userError = err instanceof Error ? err.message : String(err);
+      }
+    }
+
+    return NextResponse.json(results, { status: hasError ? 207 : 200 });
   } catch (err: unknown) {
     console.error("LINE Messaging API error:", err);
     const message = err instanceof Error ? err.message : "Unexpected error";

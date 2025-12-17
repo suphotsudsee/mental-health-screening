@@ -41,7 +41,9 @@ const pushMessage = async ({ to, label }: PushTarget, text: string) => {
   if (!res.ok) {
     const errText = await res.text();
     console.error(`[LINE] push error (${label}):`, res.status, errText);
-    throw new Error(`Failed to send LINE message to ${label}`);
+    throw new Error(
+      `Failed to send LINE message to ${label} (status ${res.status}): ${errText}`
+    );
   }
 
   return { success: true };
