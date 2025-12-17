@@ -1,4 +1,6 @@
 import type { ReactNode } from "react";
+import Script from "next/script";
+import LiffInitializer from "@/components/LiffInitializer";
 import PwaRegister from "@/components/PwaRegister";
 import "./globals.css";
 
@@ -22,11 +24,16 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="mobile-web-app-capable" content="yes" />
         <link rel="manifest" href="/manifest.json" />
+        <Script
+          src="https://static.line-scdn.net/liff/edge/2/sdk.js"
+          strategy="beforeInteractive"
+        />
       </head>
       <body className="min-h-dvh w-full bg-white">
         <main className="min-h-dvh w-full bg-white">
           {children}
         </main>
+        <LiffInitializer />
         <PwaRegister />
       </body>
     </html>
