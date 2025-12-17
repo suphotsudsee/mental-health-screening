@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import jsPDF from "jspdf";
 
 type Step = "stress" | "twoq" | "eightq" | "result";
@@ -89,6 +89,32 @@ export default function AssessmentWizard() {
   const [q8Total, setQ8Total] = useState(0);
   const [riskResult, setRiskResult] = useState<any>(null);
   const [saving, setSaving] = useState(false);
+  const [lineUserId, setLineUserId] = useState<string | null>(null);
+  const [lineDisplayName, setLineDisplayName] = useState<string | null>(null);
+
+  useEffect(() => {
+    const readLiffContext = async () => {
+      const liff = (window as typeof window & { liff?: any }).liff;
+      if (!liff?.ready) return;
+
+      try {
+        await liff.ready;
+        if (!liff.isLoggedIn()) return;
+
+        const decoded = liff.getDecodedIDToken?.();
+        const sub = decoded?.sub || null;
+        const profile = await liff.getProfile();
+
+        setLineUserId(sub || profile?.userId || null);
+        setLineDisplayName(profile?.displayName || null);
+        setFullname((prev) => prev || profile?.displayName || "");
+      } catch (err) {
+        console.warn("LIFF profile read failed", err);
+      }
+    };
+
+    void readLiffContext();
+  }, []);
 
   const update8q = (idx: number, v: number) => {
     const arr = [...answers8q];
@@ -133,7 +159,9 @@ export default function AssessmentWizard() {
       q8_total: total8,
       risk_level: level,
       emergency: hasEmergency,
-      recommendation
+      recommendation,
+      line_user_id: lineUserId,
+      line_display_name: lineDisplayName
     };
 
     setRiskResult(result);
@@ -155,7 +183,7 @@ export default function AssessmentWizard() {
         const lineMessage = [
           "แจ้งเตือนผลคัดกรอง 8Q",
           `ระดับความเสี่ยง: ${level.toUpperCase()}`,
-          `ชื่อ: ${fullname || "-"}`,
+          `ชื่อ: ${lineDisplayName || fullname || "-"}`,
           `คะแนนรวม 8Q: ${total8}`,
           hasEmergency ? "ตอบ “มี” ข้อ 7 หรือ 8 (เร่งด่วน)" : null
         ]
@@ -165,7 +193,10 @@ export default function AssessmentWizard() {
         const res = await fetch("/api/line-alert", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text: lineMessage })
+          body: JSON.stringify({
+            text: lineMessage,
+            userId: lineUserId || undefined
+          })
         });
 
         const data = await res.json();
