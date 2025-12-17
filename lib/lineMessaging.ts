@@ -3,12 +3,16 @@ type PushTarget = {
   label: string;
 };
 
+const cleanEnv = (value?: string | null) =>
+  typeof value === "string" ? value.trim() : "";
+
 const enabled =
   (process.env.NEXT_PUBLIC_ENABLE_LINE_NOTIFY || "true").toLowerCase() ===
   "true";
 
 const pushMessage = async ({ to, label }: PushTarget, text: string) => {
-  const token = process.env.LINE_CHANNEL_ACCESS_TOKEN;
+  const token = cleanEnv(process.env.LINE_CHANNEL_ACCESS_TOKEN);
+  const target = cleanEnv(to);
 
   if (!enabled) {
     console.log(`[LINE] disabled by NEXT_PUBLIC_ENABLE_LINE_NOTIFY (${label})`);
@@ -19,8 +23,12 @@ const pushMessage = async ({ to, label }: PushTarget, text: string) => {
     throw new Error("LINE_CHANNEL_ACCESS_TOKEN is missing");
   }
 
+  if (!target) {
+    throw new Error(`LINE ${label} target is empty`);
+  }
+
   const body = {
-    to,
+    to: target,
     messages: [
       {
         type: "text",
@@ -50,9 +58,9 @@ const pushMessage = async ({ to, label }: PushTarget, text: string) => {
 };
 
 export async function sendLineAlertToGroup(text: string) {
-  const groupId = process.env.LINE_GROUP_ID;
+  const groupId = cleanEnv(process.env.LINE_GROUP_ID);
   if (!groupId) {
-    throw new Error("LINE_GROUP_ID is missing");
+    throw new Error("LINE_GROUP_ID is missing or empty");
   }
   return pushMessage({ to: groupId, label: "group" }, text);
 }
