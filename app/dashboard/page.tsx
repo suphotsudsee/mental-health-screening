@@ -41,7 +41,14 @@ const levelMap: Record<string, Severity> = {
   high: "severe"
 };
 
-const scoreKeys = ["phq9_total", "phq9_score", "q9_total", "score_9q", "phq9"];
+const scoreKeys = [
+  "nine_q_score",
+  "phq9_total",
+  "phq9_score",
+  "q9_total",
+  "score_9q",
+  "phq9"
+];
 
 const parseNumber = (val: unknown): number | null => {
   if (typeof val === "number" && !Number.isNaN(val)) return val;
@@ -69,7 +76,7 @@ const scoreToSeverity = (score: number): Severity => {
 };
 
 const normalizeSeverity = (row: ScreeningRow): Severity => {
-  const rawLevel = (row?.phq9_level || row?.risk_level || "")
+  const rawLevel = (row?.nine_q_level || row?.phq9_level || row?.risk_level || "")
     .toString()
     .toLowerCase()
     .replace(/\s+/g, " ")
@@ -118,11 +125,18 @@ export default function DashboardPage() {
   const totalAssessments = rows.length;
 
   const twoQPositive = useMemo(() => {
+    const isPositive = (row: ScreeningRow) => {
+      const riskFlag = parseNumber(row.two_q_risk);
+      if (riskFlag === 1) return true;
+
+      const answers = ["two_q1", "two_q2", "two_q3", "q1", "q2", "q3"].map(
+        (k) => parseNumber(row[k]) ?? 0
+      );
+      return answers.some((v) => v >= 1);
+    };
+
     return rows.reduce((acc, row) => {
-      const q1 = parseNumber(row.q1) ?? 0;
-      const q2 = parseNumber(row.q2) ?? 0;
-      const q3 = parseNumber(row.q3) ?? 0;
-      return acc + (q1 === 1 || q2 === 1 || q3 === 1 ? 1 : 0);
+      return acc + (isPositive(row) ? 1 : 0);
     }, 0);
   }, [rows]);
 
