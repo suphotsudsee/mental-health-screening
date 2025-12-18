@@ -269,10 +269,10 @@ export default function DashboardPage() {
 
       <div className="mb-4">
         <Link
-          href="/"
+          href="/history"
           className="inline-flex items-center text-sm text-slate-600 hover:text-slate-900 underline underline-offset-2"
         >
-          ← กลับหน้าหลัก
+          ← ดูประวัติการคัดกรอง
         </Link>
       </div>
 
