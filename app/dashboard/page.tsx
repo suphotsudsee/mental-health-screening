@@ -115,6 +115,17 @@ export default function DashboardPage() {
     return counts;
   }, [rows]);
 
+  const totalAssessments = rows.length;
+
+  const twoQPositive = useMemo(() => {
+    return rows.reduce((acc, row) => {
+      const q1 = parseNumber(row.q1) ?? 0;
+      const q2 = parseNumber(row.q2) ?? 0;
+      const q3 = parseNumber(row.q3) ?? 0;
+      return acc + (q1 === 1 || q2 === 1 || q3 === 1 ? 1 : 0);
+    }, 0);
+  }, [rows]);
+
   return (
     <div className="p-4 space-y-4">
       <div className="flex items-center justify-between gap-3">
@@ -126,6 +137,19 @@ export default function DashboardPage() {
         </Link>
         <h1 className="flex-1 text-center text-xl font-bold">Dashboard ผู้บริหาร</h1>
         <div className="w-[96px]" />
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <StatCard
+          label="จำนวนผู้ประเมินทั้งหมด"
+          value={totalAssessments}
+          color="bg-slate-100"
+        />
+        <StatCard
+          label="2Q คัดกรองบวก (ตอบใช่ ≥1 ข้อ)"
+          value={twoQPositive}
+          color="bg-amber-100"
+        />
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
