@@ -13,12 +13,12 @@ export default function HomePage() {
       </header>
 
       <div className="space-y-3">
-        <Link
+        {/* <Link
           href="/assess"
           className="block w-full p-4 rounded-lg bg-emerald-600 text-white text-center font-semibold"
         >
           เริ่มทำแบบประเมิน
-        </Link>
+        </Link> */}
 
         <Link
           href="/history"
