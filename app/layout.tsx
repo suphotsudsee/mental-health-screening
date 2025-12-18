@@ -33,8 +33,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <main className="min-h-dvh w-full bg-white">
           {children}
         </main>
-        <LiffInitializer />
-        <PwaRegister />
+        {/* <LiffInitializer />
+        <PwaRegister /> */}
       </body>
     </html>
   );
