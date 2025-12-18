@@ -24,6 +24,23 @@ const severityCards: Array<{
   { key: "severe", label: "20-27 คะแนน (รุนแรง)", color: "bg-rose-200" }
 ];
 
+const levelMap: Record<string, Severity> = {
+  minimal: "minimal",
+  normal: "minimal",
+  none: "minimal",
+  "no risk": "minimal",
+  mild: "mild",
+  low: "mild",
+  moderate: "moderate",
+  medium: "moderate",
+  "moderately severe": "moderately_severe",
+  "moderate-severe": "moderately_severe",
+  "mod-severe": "moderately_severe",
+  "mod severe": "moderately_severe",
+  severe: "severe",
+  high: "severe"
+};
+
 const scoreKeys = ["phq9_total", "phq9_score", "q9_total", "score_9q", "phq9"];
 
 const parseNumber = (val: unknown): number | null => {
@@ -58,23 +75,7 @@ const normalizeSeverity = (row: ScreeningRow): Severity => {
     .replace(/\s+/g, " ")
     .trim();
 
-  const mapped =
-    {
-      minimal: "minimal",
-      normal: "minimal",
-      none: "minimal",
-      "no risk": "minimal",
-      mild: "mild",
-      low: "mild",
-      moderate: "moderate",
-      medium: "moderate",
-      "moderately severe": "moderately_severe",
-      "moderate-severe": "moderately_severe",
-      "mod-severe": "moderately_severe",
-      "mod severe": "moderately_severe",
-      severe: "severe",
-      high: "severe"
-    }[rawLevel] as Severity | undefined;
+  const mapped = levelMap[rawLevel as keyof typeof levelMap];
 
   if (mapped) return mapped;
 
